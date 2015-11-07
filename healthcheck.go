@@ -24,6 +24,7 @@ type HealthChecker interface {
 	RegisterIndicator(indicator HealthIndicator)
 	UnregisterIndicator(indicator HealthIndicator)
 	AddHook(name string, hook HealthCheckerHook)
+	RemoveHook(name string)
 }
 
 type AsyncHealthChecker struct {
