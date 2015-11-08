@@ -23,7 +23,7 @@ var (
 // given application component.
 //
 // Health indicator should not been long running proccess, because the
-//  indicators method IsHealthy is called in infinite loop of HelathChecker
+// indicators method IsHealthy is called in infinite loop of HelathChecker
 // and that could block othe health indicators to be callled for a long time.
 type HealthIndicator interface {
 
@@ -31,8 +31,8 @@ type HealthIndicator interface {
 	// The name of the indicator shoudl be unique.
 	Name() string
 
-	// IsHealthy return true if compoent
-	// is healthy and false in oposit case.
+	// IsHealthy return true if component
+	// is healthy and false in oposite case.
 	IsHealthy() bool
 }
 
