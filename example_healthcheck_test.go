@@ -35,6 +35,7 @@ func SimpleLogHook(m map[string]bool) {
 	}
 }
 
+//Basic usage example.
 func Example() {
 	// Create healthchecker
 	checker := healthcheck.New(time.Millisecond)
