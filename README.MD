@@ -1,5 +1,10 @@
 # Go healthchecker
 
+[![GoDoc](https://godoc.org/github.com/sohlich/healthcheck?status.svg)](https://godoc.org/github.com/sohlich/healthcheck)
+
+[![Build Status](https://api.travis-ci.org/sohlich/healthcheck.svg?branch=master)](https://travis-ci.org/sohlich/healthcheck)
+
+
 This package provide basic tool for application components health checking.
 
 
