@@ -1,0 +1,365 @@
+<!--
+	Copyright 2009 The Go Authors. All rights reserved.
+	Use of this source code is governed by a BSD-style
+	license that can be found in the LICENSE file.
+-->
+<!--
+	Note: Static (i.e., not template-generated) href and id
+	attributes start with "pkg-" to make it impossible for
+	them to conflict with generated attributes (some of which
+	correspond to Go identifiers).
+-->
+
+	<script type='text/javascript'>
+	document.ANALYSIS_DATA = ;
+	document.CALLGRAPH = ;
+	</script>
+
+	
+		
+		<div id="short-nav">
+			<dl>
+			<dd><code>import "github.com/sohlich/healthcheck"</code></dd>
+			</dl>
+			<dl>
+			<dd><a href="#pkg-overview" class="overviewLink">Overview</a></dd>
+			<dd><a href="#pkg-index" class="indexLink">Index</a></dd>
+			
+				<dd><a href="#pkg-examples" class="examplesLink">Examples</a></dd>
+			
+			
+			</dl>
+		</div>
+		<!-- The package's Name is printed as title by the top-level template -->
+		<div id="pkg-overview" class="toggleVisible">
+			<div class="collapsed">
+				<h2 class="toggleButton" title="Click to show Overview section">Overview ▹</h2>
+			</div>
+			<div class="expanded">
+				<h2 class="toggleButton" title="Click to hide Overview section">Overview ▾</h2>
+				<p>
+Package healthcheck provides simple implementation of application
+periodic health checker. That periodically checks the health of application
+compoentns.
+</p>
+
+			</div>
+		</div>
+		<div id="example_" class="toggle">
+	<div class="collapsed">
+		<p class="exampleHeading toggleButton">▹ <span class="text">Example</span></p>
+	</div>
+	<div class="expanded">
+		<p class="exampleHeading toggleButton">▾ <span class="text">Example</span></p>
+		
+		
+		
+			<p>Code:</p>
+			<pre class="code">package healthcheck_test
+
+import (
+    &#34;log&#34;
+    &#34;net/http&#34;
+    &#34;time&#34;
+
+    &#34;github.com/sohlich/healthcheck&#34;
+)
+
+<span class="comment">// SimpleHttpAliveIndicator test the availability of given</span>
+<span class="comment">// url address.</span>
+type SimpleHttpAliveIndicator struct {
+}
+
+func (t *SimpleHttpAliveIndicator) Name() string {
+    return &#34;httpAlive&#34;
+}
+
+func (t *SimpleHttpAliveIndicator) IsHealthy() bool {
+    err, _ := http.Get(&#34;http://google.com&#34;)
+    if err != nil {
+        return false
+    }
+    return true
+}
+
+<span class="comment">// SimpleLogHook logs the result of health checks via builtin</span>
+<span class="comment">// log package</span>
+func SimpleLogHook(m map[string]bool) {
+    if m[&#34;httpAlive&#34;] {
+        log.Println(&#34;The service http://google.com is reachable&#34;)
+    } else {
+        log.Println(&#34;The service http://google.com is unreachable&#34;)
+    }
+}
+
+func Example() {
+    <span class="comment">// Create healthchecker</span>
+    checker := healthcheck.New(time.Millisecond)
+
+    <span class="comment">// Register HealthIndicator</span>
+    checker.RegisterIndicator(&amp;SimpleHttpAliveIndicator{})
+
+    <span class="comment">// Add hooks that consume the results.</span>
+    checker.AddHook(&#34;testHook&#34;, SimpleLogHook)
+
+    <span class="comment">// Start the checker</span>
+    checker.Start()
+    time.Sleep(10 * time.Second)
+
+    <span class="comment">// Before the application finish try</span>
+    <span class="comment">// to gracefully shutdown the checker</span>
+    checker.Stop()
+}
+</pre>
+			
+		
+	</div>
+</div>
+
+
+		<div id="pkg-index" class="toggleVisible">
+		<div class="collapsed">
+			<h2 class="toggleButton" title="Click to show Index section">Index ▹</h2>
+		</div>
+		<div class="expanded">
+			<h2 class="toggleButton" title="Click to hide Index section">Index ▾</h2>
+
+		<!-- Table of contents for API; must be named manual-nav to turn off auto nav. -->
+			<div id="manual-nav">
+			<dl>
+			
+			
+				<dd><a href="#pkg-variables">Variables</a></dd>
+			
+			
+			
+				
+				<dd><a href="#HealthChecker">type HealthChecker</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#New">func New(period time.Duration) HealthChecker</a></dd>
+				
+				
+			
+				
+				<dd><a href="#HealthCheckerHook">type HealthCheckerHook</a></dd>
+				
+				
+			
+				
+				<dd><a href="#HealthIndicator">type HealthIndicator</a></dd>
+				
+				
+			
+			
+			</dl>
+			</div><!-- #manual-nav -->
+
+		
+		<div id="pkg-examples">
+			<h4>Examples</h4>
+			<dl>
+			
+			<dd><a class="exampleLink" href="#example_">Package</a></dd>
+			
+			</dl>
+		</div>
+		
+
+		
+			<h4>Package files</h4>
+			<p>
+			<span style="font-size:90%">
+			
+				<a href="/src/github.com/sohlich/healthcheck/healthcheck.go">healthcheck.go</a>
+			
+			</span>
+			</p>
+		
+		</div><!-- .expanded -->
+		</div><!-- #pkg-index -->
+
+		<div id="pkg-callgraph" class="toggle" style="display: none">
+		<div class="collapsed">
+			<h2 class="toggleButton" title="Click to show Internal Call Graph section">Internal call graph ▹</h2>
+		</div> <!-- .expanded -->
+		<div class="expanded">
+			<h2 class="toggleButton" title="Click to hide Internal Call Graph section">Internal call graph ▾</h2>
+			<p>
+			  In the call graph viewer below, each node
+			  is a function belonging to this package
+			  and its children are the functions it
+			  calls&mdash;perhaps dynamically.
+			</p>
+			<p>
+			  The root nodes are the entry points of the
+			  package: functions that may be called from
+			  outside the package.
+			  There may be non-exported or anonymous
+			  functions among them if they are called
+			  dynamically from another package.
+			</p>
+			<p>
+			  Click a node to visit that function's source code.
+			  From there you can visit its callers by
+			  clicking its declaring <code>func</code>
+			  token.
+			</p>
+			<p>
+			  Functions may be omitted if they were
+			  determined to be unreachable in the
+			  particular programs or tests that were
+			  analyzed.
+			</p>
+			<!-- Zero means show all package entry points. -->
+			<ul style="margin-left: 0.5in" id="callgraph-0" class="treeview"></ul>
+		</div>
+		</div> <!-- #pkg-callgraph -->
+
+		
+		
+			<h2 id="pkg-variables">Variables</h2>
+			
+				<pre>var (
+    <span class="comment">// ErrHealthcheckerNotStarted is returned by HealthChecker.Stop() method if</span>
+    <span class="comment">// the checker has not been started yet.</span>
+    <span id="ErrHealthcheckerNotStarted">ErrHealthcheckerNotStarted</span> = <a href="/pkg/errors/">errors</a>.<a href="/pkg/errors/#New">New</a>(&#34;HealthChecker not started yet.&#34;)
+    <span class="comment">// ErrHealthcheckerAlreadyStarted is returned by HealthChecker.Start() method</span>
+    <span class="comment">// if the checker has been already started.</span>
+    <span id="ErrHealthcheckerAlreadyStarted">ErrHealthcheckerAlreadyStarted</span> = <a href="/pkg/errors/">errors</a>.<a href="/pkg/errors/#New">New</a>(&#34;HealthChecker already started.&#34;)
+)</pre>
+				<p>
+Errors that are thrown if HealthChecker is in illegal state.
+</p>
+
+			
+		
+		
+		
+			
+			
+			<h2 id="HealthChecker">type <a href="/src/target/healthcheck.go?s=1721:2403#L38">HealthChecker</a></h2>
+			<pre>type HealthChecker interface {
+    <span class="comment">// Start is called to start the infinite loop</span>
+    <span class="comment">// to check the HealthIndicators.</span>
+    Start() <a href="/pkg/builtin/#error">error</a>
+
+    <span class="comment">// Stop stops the HealthChjeckers</span>
+    <span class="comment">// infinite loop.</span>
+    Stop() <a href="/pkg/builtin/#error">error</a>
+
+    <span class="comment">// RegisterIndicator register the indicator</span>
+    <span class="comment">// to HelathChecker object.</span>
+    RegisterIndicator(indicator <a href="#HealthIndicator">HealthIndicator</a>)
+
+    <span class="comment">// UnregisterIndicator removes the HealthIndicator</span>
+    <span class="comment">// from the collection of checked inidcators.</span>
+    UnregisterIndicator(indicator <a href="#HealthIndicator">HealthIndicator</a>)
+
+    <span class="comment">// AddHook adds a hook to the collection of hooks to be called</span>
+    <span class="comment">// after all checks are done.</span>
+    AddHook(name <a href="/pkg/builtin/#string">string</a>, hook <a href="#HealthCheckerHook">HealthCheckerHook</a>)
+
+    <span class="comment">// RemoveHook removes the hook by given name.</span>
+    RemoveHook(name <a href="/pkg/builtin/#string">string</a>)
+}</pre>
+			<p>
+HealthChecker interface wraps the functionality
+of package. After the HealthChecker is started the infinite loop is
+started and ii iterates over all regitered HealthIndicators. After the health check
+is done, the result is then submitted to added hooks.
+The HealthChecker  is considered to be thread safe.
+</p>
+
+
+			
+
+			
+
+			
+			
+			
+
+			
+				
+				<h3 id="New">func <a href="/src/target/healthcheck.go?s=2680:2724#L73">New</a></h3>
+				<pre>func New(period <a href="/pkg/time/">time</a>.<a href="/pkg/time/#Duration">Duration</a>) <a href="#HealthChecker">HealthChecker</a></pre>
+				<p>
+New creates new HealthChecker object.
+</p>
+
+				
+				
+			
+
+			
+		
+			
+			
+			<h2 id="HealthCheckerHook">type <a href="/src/target/healthcheck.go?s=1354:1398#L31">HealthCheckerHook</a></h2>
+			<pre>type HealthCheckerHook func(map[<a href="/pkg/builtin/#string">string</a>]<a href="/pkg/builtin/#bool">bool</a>)</pre>
+			<p>
+HealthCheckerHook is a function that is called after
+all health checks are done.
+</p>
+
+
+			
+
+			
+
+			
+			
+			
+
+			
+
+			
+		
+			
+			
+			<h2 id="HealthIndicator">type <a href="/src/target/healthcheck.go?s=1023:1265#L18">HealthIndicator</a></h2>
+			<pre>type HealthIndicator interface {
+
+    <span class="comment">// Name should return the name of indicator.</span>
+    <span class="comment">// The name of the indicator shoudl be unique.</span>
+    Name() <a href="/pkg/builtin/#string">string</a>
+
+    <span class="comment">// IsHealthy return true if compoent</span>
+    <span class="comment">// is healthy and false in oposit case.</span>
+    IsHealthy() <a href="/pkg/builtin/#bool">bool</a>
+}</pre>
+			<p>
+HealthIndicator is the method the wraps the function that check the
+given application component.
+</p>
+<p>
+Health indicator should not been long running proccess, because the
+</p>
+<pre>indicators method IsHealthy is called in infinite loop of HelathChecker
+</pre>
+<p>
+and that could block othe health indicators to be callled for a long time.
+</p>
+
+
+			
+
+			
+
+			
+			
+			
+
+			
+
+			
+		
+	
+
+	
+
+
+
+
+
