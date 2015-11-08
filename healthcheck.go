@@ -79,7 +79,8 @@ type asyncHealthChecker struct {
 	stopChan      chan struct{}
 }
 
-// New creates new HealthChecker object.
+// New creates new HealthChecker object.The period argument is the period
+// of health checks.
 func New(period time.Duration) HealthChecker {
 	checker := &asyncHealthChecker{
 		period:        period,
