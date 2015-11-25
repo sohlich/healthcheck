@@ -7,6 +7,8 @@ import (
 	"errors"
 	"sync"
 	"time"
+
+	"golang.org/x/net/context"
 )
 
 // Errors that are thrown if HealthChecker is in illegal state.
@@ -71,42 +73,45 @@ type HealthChecker interface {
 }
 
 type asyncHealthChecker struct {
-	period        time.Duration
-	indicatorLock *sync.Mutex
-	hookLock      *sync.Mutex
-	indicators    map[string]HealthIndicator
-	hooks         map[string]HealthCheckerHook
-	stopChan      chan struct{}
+	indicatorLock   *sync.Mutex
+	hookLock        *sync.Mutex
+	indicators      map[string]HealthIndicator
+	hooks           map[string]HealthCheckerHook
+	keepAliveTicker *time.Ticker
+	cancel          context.CancelFunc
+	ctx             context.Context
 }
 
 // New creates new HealthChecker object.The period argument is the period
 // of health checks.
 func New(period time.Duration) HealthChecker {
+
 	checker := &asyncHealthChecker{
-		period:        period,
-		indicatorLock: &sync.Mutex{},
-		hookLock:      &sync.Mutex{},
-		indicators:    make(map[string]HealthIndicator),
-		hooks:         make(map[string]HealthCheckerHook),
+		indicatorLock:   &sync.Mutex{},
+		hookLock:        &sync.Mutex{},
+		indicators:      make(map[string]HealthIndicator),
+		hooks:           make(map[string]HealthCheckerHook),
+		keepAliveTicker: time.NewTicker(period),
 	}
 
 	return checker
 }
 
 func (checker *asyncHealthChecker) Start() error {
-	if checker.stopChan != nil {
+	if checker.cancel != nil {
 		return ErrHealthcheckerAlreadyStarted
 	}
 
-	checker.stopChan = make(chan struct{}, 0)
+	ctx, cancel := context.WithCancel(context.TODO())
+	checker.ctx = ctx
+	checker.cancel = cancel
+
 	go func(ch *asyncHealthChecker) {
 		for {
-			time.Sleep(ch.period)
 			select {
-			case <-ch.stopChan:
-				close(checker.stopChan)
+			case <-ch.ctx.Done():
 				return
-			default:
+			case <-ch.keepAliveTicker.C:
 				res := make(map[string]bool)
 				ch.indicatorLock.Lock()
 				for _, indicator := range ch.indicators {
@@ -128,10 +133,11 @@ func (checker *asyncHealthChecker) Start() error {
 }
 
 func (checker *asyncHealthChecker) Stop() error {
-	if checker.stopChan == nil {
+	if checker.cancel == nil {
 		return ErrHealthcheckerNotStarted
 	}
-	checker.stopChan <- struct{}{}
+	checker.cancel()
+	checker.cancel = nil
 	return nil
 }
 
