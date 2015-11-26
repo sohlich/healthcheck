@@ -73,13 +73,13 @@ type HealthChecker interface {
 }
 
 type asyncHealthChecker struct {
-	indicatorLock   *sync.Mutex
-	hookLock        *sync.Mutex
-	indicators      map[string]HealthIndicator
-	hooks           map[string]HealthCheckerHook
-	keepAliveTicker *time.Ticker
-	cancel          context.CancelFunc
-	ctx             context.Context
+	indicatorLock *sync.Mutex
+	hookLock      *sync.Mutex
+	indicators    map[string]HealthIndicator
+	hooks         map[string]HealthCheckerHook
+	ticker        *time.Ticker
+	cancel        context.CancelFunc
+	ctx           context.Context
 }
 
 // New creates new HealthChecker object.The period argument is the period
@@ -87,11 +87,11 @@ type asyncHealthChecker struct {
 func New(period time.Duration) HealthChecker {
 
 	checker := &asyncHealthChecker{
-		indicatorLock:   &sync.Mutex{},
-		hookLock:        &sync.Mutex{},
-		indicators:      make(map[string]HealthIndicator),
-		hooks:           make(map[string]HealthCheckerHook),
-		keepAliveTicker: time.NewTicker(period),
+		indicatorLock: &sync.Mutex{},
+		hookLock:      &sync.Mutex{},
+		indicators:    make(map[string]HealthIndicator),
+		hooks:         make(map[string]HealthCheckerHook),
+		ticker:        time.NewTicker(period),
 	}
 
 	return checker
@@ -101,7 +101,8 @@ func (checker *asyncHealthChecker) Start() error {
 	if checker.cancel != nil {
 		return ErrHealthcheckerAlreadyStarted
 	}
-
+	// Create context and cacel func
+	// for later Stop() call.
 	ctx, cancel := context.WithCancel(context.TODO())
 	checker.ctx = ctx
 	checker.cancel = cancel
@@ -111,14 +112,16 @@ func (checker *asyncHealthChecker) Start() error {
 			select {
 			case <-ch.ctx.Done():
 				return
-			case <-ch.keepAliveTicker.C:
+			case <-ch.ticker.C:
 				res := make(map[string]bool)
+				// Do check
 				ch.indicatorLock.Lock()
 				for _, indicator := range ch.indicators {
 					res[indicator.Name()] = indicator.IsHealthy()
 				}
 				ch.indicatorLock.Unlock()
 
+				// Write results
 				ch.hookLock.Lock()
 				for _, hook := range ch.hooks {
 					go func(r map[string]bool) {

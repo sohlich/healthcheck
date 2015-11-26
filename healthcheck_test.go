@@ -22,6 +22,7 @@ func (t *TestIndicator) IsHealthy() bool {
 	t.Unlock()
 	return true
 }
+
 func TestBasicFunction(t *testing.T) {
 	checker := New(time.Millisecond)
 	checker.RegisterIndicator(&TestIndicator{
